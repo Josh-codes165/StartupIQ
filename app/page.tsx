@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -9,11 +9,56 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { supabase } from "./lib/supabase";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkUser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        loadHistory();
+        return;
+      }
+      router.replace("/login");
+    }
+    checkUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        loadHistory();
+      } else {
+        router.replace("/login");
+      }
+    });
+  }, []);
+
+  const loadHistory = async () => {
+    const { data, error } = await supabase
+      .from("analyses")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.log("Error Loading History", error);
+      return;
+    }
+    setLoadingHistory(false);
+    setHistory(data);
+  };
 
   const swotData = analysis?.swot
     ? [
@@ -48,106 +93,139 @@ export default function Home() {
       setLoading(false);
     }
   };
-
   const tags = ["market", "competitors", "swot", "score"];
 
   return (
-    <main className="min-h-screen w-full bg-stone-50 flex flex-col items-center justify-center px-6 py-20">
-      <div className="w-full max-w-4xl flex flex-col items-center gap-12">
-        <section className="w-full text-center">
-          <div className="inline-flex items-center gap-2 rounded-md border border-stone-300 bg-stone-100 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-stone-500 mb-8">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-            ai diagnostic for early-stage ideas
-          </div>
+    <main className="min-h-screen bg-stone-100 flex">
+      <aside className="hidden lg:flex w-72 h-screen flex-col border-r border-zinc-200 bg-white">
+        {loadingHistory && (
+          <p className="px-5 pt-5 text-sm text-zinc-500">Loading history...</p>
+        )}
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-stone-900 mb-6">
-            Validate Your
-            <span className="block text-stone-400">Startup Idea</span>
-          </h1>
+        <div className="px-5 py-6 border-b border-zinc-100">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Recent Analyses
+          </h2>
+        </div>
 
-          <p className="max-w-2xl mx-auto text-lg text-stone-600 mb-12">
-            Run your idea through the scanner for instant competitor analysis,
-            SWOT reports, opportunity scores, market insights, and
-            investor-ready summaries.
-          </p>
-
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl overflow-hidden">
-              <div className="flex flex-col md:flex-row items-stretch">
-                <div className="flex-1 flex items-center gap-3 px-6 py-5">
-                  <span className="font-mono text-amber-400">$</span>
-                  <input
-                    type="text"
-                    value={idea}
-                    onChange={(e) => setIdea(e.target.value)}
-                    placeholder="describe your idea, e.g. an ai matchmaking platform for student internships"
-                    className="flex-1 bg-transparent font-mono text-base text-zinc-100 placeholder-zinc-500 outline-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading || !idea.trim()}
-                  className="flex items-center justify-center gap-2 px-8 py-5 bg-amber-400 text-zinc-950 font-mono font-semibold hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {loading && (
-                    <span className="h-4 w-4 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
-                  )}
-                  {loading ? "analyzing" : "run analysis"}
-                </button>
-              </div>
+        <div className="flex-1 overflow-y-auto px-3 py-4">
+          {history.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+              No analyses yet
             </div>
-          </form>
+          ) : (
+            <div className="space-y-2">
+              {history.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setAnalysis(item.analysis);
+                    setIdea(item.idea);
+                  }}
+                  className="group w-full rounded-xl border border-transparent bg-white p-4 text-left transition-all duration-200 hover:border-amber-200 hover:bg-amber-50"
+                >
+                  <p className="truncate text-sm font-semibold text-zinc-800 group-hover:text-zinc-900">
+                    {item.idea}
+                  </p>
 
-          <div className="flex flex-wrap justify-center gap-3 mt-10">
-            {tags.map((tag) => (
-              <div
-                key={tag}
-                className="rounded-md border border-stone-300 px-4 py-1.5 text-sm font-mono text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-colors"
-              >
-                [{tag}]
-              </div>
-            ))}
+                  <p className="mt-1 text-xs text-zinc-500">Startup Analysis</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      <div className="flex-1 h-screen overflow-y-auto px-6 py-8 lg:px-12">
+        <section className="max-w-4xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            AI Startup Validator
           </div>
+
+          <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-6xl">
+            Validate your startup idea
+            <span className="block text-zinc-400">before you build it.</span>
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600">
+            Get instant competitor research, SWOT analysis, opportunity scores,
+            market insights, and investor-ready summaries in seconds.
+          </p>
         </section>
+        <form onSubmit={handleSubmit} className="mt-10 max-w-4xl">
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition focus-within:border-amber-400 focus-within:ring-4 focus-within:ring-amber-100">
+            <div className="flex flex-col lg:flex-row">
+              <div className="flex flex-1 items-center gap-3 px-6 py-5">
+                <span className="text-xl">💡</span>
+
+                <input
+                  type="text"
+                  value={idea}
+                  onChange={(e) => setIdea(e.target.value)}
+                  placeholder="Describe your startup idea..."
+                  className="w-full bg-transparent text-base text-zinc-800 placeholder:text-zinc-400 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !idea.trim()}
+                className="flex items-center justify-center bg-amber-500 px-8 py-5 font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Analyzing..." : "Run Analysis"}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
 
         {analysis && (
-          <div className="w-full max-w-5xl mt-16 space-y-10">
+          <div className="mt-14 max-w-6xl space-y-8 ">
             {/* SWOT */}
             {analysis.swot && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-green-50 border border-green-200 rounded-xl p-5">
+                <div className="mb-4 text-lg font-semibold text-green-600">
                   <h2 className="font-bold text-green-700 mb-3">Strengths</h2>
-                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.strengths?.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                <div className="mb-4 text-lg font-semibold text-green-600">
                   <h2 className="font-bold text-red-700 mb-3">Weaknesses</h2>
-                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.weaknesses?.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                <div className="mb-4 text-lg font-semibold text-blue-600">
                   <h2 className="font-bold text-blue-700 mb-3">
                     Opportunities
                   </h2>
-                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.opportunities?.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+                <div className="mb-4 text-lg font-semibold text-yellow-600">
                   <h2 className="font-bold text-yellow-700 mb-3">Threats</h2>
-                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.threats?.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
@@ -156,8 +234,8 @@ export default function Home() {
               </div>
             )}
             {analysis?.swot && (
-              <div className="w-full max-w-5xl mt-10 bg-white border rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-4 text-center">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-zinc-800">
                   SWOT Overview Chart
                 </h2>
 
@@ -176,35 +254,43 @@ export default function Home() {
 
             {/* Competitors */}
             {analysis.competitors?.length > 0 && (
-              <div className="bg-white border rounded-xl p-5 shadow-sm">
-                <h2 className="font-bold text-blue-600 mb-3">Competitors</h2>
-                <ul className="list-disc pl-5 text-gray-700">
-                  {analysis.competitors.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
+              <div className="flex flex-wrap gap-3 mt-4">
+                <h2 className="mb-6 text-xl font-semibold text-zinc-800">
+                  Competitors
+                </h2><br />
+                {analysis.competitors.map((c, i) => (
+                  <span
+                    key={i}
+                    className="rounded-full bg-zinc-100 px-4 py-2 text-sm text-zinc-700"
+                  >
+                    {c}
+                  </span>
+                ))}
               </div>
             )}
 
             {/* Opportunity Score */}
             {analysis.opportunityScore !== undefined && (
-              <div className="text-center bg-white border rounded-xl p-8 shadow-sm">
-                <h2 className="text-blue-600 text-left font-bold mb-2">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+                <h2 className="text-sm uppercase tracking-widest text-zinc-500">
                   Opportunity Score
                 </h2>
-                <p className="text-5xl font-bold text-green-600">
-                  {analysis.opportunityScore} / 100
+
+                <p className="mt-3 text-6xl font-bold text-amber-500">
+                  {analysis.opportunityScore}
+                  <span className="text-2xl text-zinc-400">/100</span>
                 </p>
               </div>
             )}
 
             {/* Investor Pitch */}
             {analysis.pitch && (
-              <div className="bg-white border rounded-xl p-6 shadow-sm">
-                <h2 className="font-bold text-blue-600 mb-3">Investor Pitch</h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {analysis.pitch}
-                </p>
+              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+                <h2 className="mb-5 text-xl font-semibold text-zinc-800">
+                  Investor Pitch
+                </h2>
+
+                <p className="leading-8 text-zinc-600">{analysis.pitch}</p>
               </div>
             )}
           </div>

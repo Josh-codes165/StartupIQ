@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from "@/app/lib/supabase";
+import { error } from "console";
 
 export async function POST(req) {
   try {
@@ -23,7 +25,7 @@ export async function POST(req) {
         "strengths": [],
         "weaknesses": [],
         "opportunities": [],
-        "threats": []"
+        "threats": []
     },
     "competitors" : [
     "Competitor 1",
@@ -48,6 +50,22 @@ export async function POST(req) {
     text = text.replace(/```/g, "");
 
     const data = JSON.parse(text);
+
+    const { data: savedData, error } = await supabase
+      .from("analyses")
+      .insert([
+        {
+          idea,
+          analysis: data,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.log("supabase insert error", error);
+      throw new Error(error.message)
+    }
+    console.log("saved to supabase", savedData)
 
     return Response.json(data);
   } catch (error) {
