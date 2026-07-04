@@ -12,11 +12,23 @@ import {
 import { supabase } from "./lib/supabase";
 import { useRouter } from "next/navigation";
 
+type Analysis = {
+  swot: {
+    strengths: string[];
+    weaknesses: string[];
+    opportunities: string[];
+    threats: string[];
+  };
+  competitors: string[];
+  opportunityScore: number;
+  risk: string;
+  pitch: string;
+}
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [analysis, setAnalysis] = useState(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const router = useRouter();
