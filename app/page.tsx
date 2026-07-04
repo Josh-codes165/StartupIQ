@@ -21,7 +21,7 @@ type Analysis = {
   };
   competitors: string[];
   opportunityScore: number;
-  risk: string;
+  risk: string[];
   pitch: string;
 }
 export default function Home() {
@@ -55,6 +55,9 @@ export default function Home() {
       } else {
         router.replace("/login");
       }
+      return () => {
+        subscription?.unsubscribe();
+      }
     });
   }, []);
 
@@ -72,7 +75,7 @@ export default function Home() {
     setHistory(data);
   };
 
-  const swotData = analysis?.swot
+  const swotData: { name: string; value: number }[] = analysis?.swot
     ? [
         { name: "Strengths", value: analysis.swot.strengths.length },
         { name: "Weaknesses", value: analysis.swot.weaknesses.length },
