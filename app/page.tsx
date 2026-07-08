@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { supabase } from "./lib/supabase";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Analysis = {
   swot: {
@@ -23,11 +24,12 @@ type Analysis = {
   opportunityScore: number;
   risk: string[];
   pitch: string;
-}
+};
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
@@ -40,6 +42,7 @@ export default function Home() {
       } = await supabase.auth.getSession();
 
       if (session) {
+        setUser(session.user);
         loadHistory();
         return;
       }
@@ -57,9 +60,15 @@ export default function Home() {
       }
       return () => {
         subscription?.unsubscribe();
-      }
+      };
     });
   }, []);
+
+  const handleSignOUT = () => {
+    supabase.auth.signOut().then(() => {
+      router.replace("/login")
+    })
+  }
 
   const loadHistory = async () => {
     const { data, error } = await supabase
@@ -148,6 +157,26 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+        <div className=" mt-4 mb-3 flex items-center gap-3 px-5">
+          {user?.user_metadata?.avatar_url && (
+            <Image
+              src={user?.user_metadata.avatar_url}
+              alt="Profile"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          )}
+          <div>
+            <p className=" text-sm font-medium text-zinc-700">
+              {user?.user_metadata.name}
+            </p>
+
+            <button onClick={handleSignOUT} className=" bg-amber-500 rounded-2xl py-0.5 px-3 font-semibold text-white transition-all duration-200 hover:bg-amber-600 hover:shadow-lg active:scale-[0.98]">
+              Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -272,7 +301,8 @@ export default function Home() {
               <div className="flex flex-wrap gap-3 mt-4">
                 <h2 className="mb-6 text-xl font-semibold text-zinc-800">
                   Competitors
-                </h2><br />
+                </h2>
+                <br />
                 {analysis.competitors.map((c, i) => (
                   <span
                     key={i}
