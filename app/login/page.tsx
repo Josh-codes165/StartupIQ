@@ -1,5 +1,6 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
 export default function LoginPage() {
@@ -16,17 +17,22 @@ export default function LoginPage() {
     }
   };
   return (
-    <main className="min-h-screen bg-stone-50 flex items-center justify-center px-6">
-      <div className="w-full max-w-xl rounded-3xl border border-stone-200 bg-white p-10 shadow-lg">
+    <main className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-10 sm:px-6">
+      <div className="w-full max-w-xl rounded-3xl border border-stone-200 bg-white p-6 shadow-lg sm:p-10">
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-amber-500">StartupIQ</h2>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500">
+                <Sparkles className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-zinc-900">StartupIQ</span>
+            </div>
 
-            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-stone-900">
+            <h1 className="mt-6 text-3xl font-bold leading-tight tracking-tight text-stone-900 sm:text-4xl">
               Validate your startup idea before you build.
             </h1>
 
-            <p className="mt-4 text-lg leading-8 text-stone-600">
+            <p className="mt-4 text-base leading-7 text-stone-600 sm:text-lg sm:leading-8">
               Use AI to analyze startup ideas, discover competitors, identify
               risks, and generate investor-ready insights in seconds.
             </p>
@@ -34,12 +40,12 @@ export default function LoginPage() {
 
           <button
             onClick={signIn}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-amber-500 px-6 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-amber-600 hover:shadow-lg active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-amber-500 px-4 py-3.5 text-base font-semibold text-white transition-all duration-200 hover:bg-amber-600 hover:shadow-lg active:scale-[0.98] sm:px-6 sm:py-4 sm:text-lg"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
-              className="h-6 w-6"
+              className="h-5 w-5 shrink-0 sm:h-6 sm:w-6"
             >
               <path
                 fill="#FFC107"
@@ -58,7 +64,7 @@ export default function LoginPage() {
                 d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.4 5.5-6.7 6.8l6.2 5.2C38.5 36.5 44 31 44 24c0-1.3-.1-2.3-.4-3.5z"
               />
             </svg>
-            Continue with Google
+            <span>Continue with Google</span>
           </button>
           <p className="text-sm text-stone-500 text-center">
             Secure authentication powered by Google
