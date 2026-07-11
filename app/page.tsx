@@ -306,7 +306,7 @@ export default function Home() {
       {/* Main */}
       <div className="flex-1 lg:h-screen overflow-y-auto px-6 py-10 lg:px-16">
         <section className="mx-auto max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700">
+          <div className=" uppercase mx-auto flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold capitalize text-amber-700">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
             AI-powered validation
           </div>
@@ -314,7 +314,7 @@ export default function Home() {
           <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-6xl">
             Validate your <span className="text-amber-500">startup idea</span>.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600">
+          <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-zinc-600">
             Describe your startup idea and let AI analyze its strengths,
             weaknesses, competitors, risks, and market opportunity.
           </p>
@@ -326,15 +326,15 @@ export default function Home() {
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Describe your startup idea..."
+              placeholder='Example: "An AI platform that matches students with internship opportunities."'
               rows={3}
               className="w-full resize-none bg-transparent text-base text-zinc-800 placeholder:text-zinc-400 outline-none"
             />
 
-            <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-end">
+            <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
               <button
                 type="submit"
-                disabled={loading || idea.trim().length < 10}
+                disabled={loading}
                 className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
               >
                 {loading ? "Analyzing..." : "Run Analysis"}
