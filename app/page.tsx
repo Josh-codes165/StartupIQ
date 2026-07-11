@@ -98,9 +98,8 @@ export default function Home() {
   };
 
   const loadHistory = async () => {
-
     const {
-      data: {user},
+      data: { user },
     } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from("analyses")
@@ -133,7 +132,7 @@ export default function Home() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idea , userId: user?.id}),
+        body: JSON.stringify({ idea, userId: user?.id }),
       });
 
       if (!res.ok) throw new Error("Failed to analyze idea");
@@ -306,7 +305,7 @@ export default function Home() {
 
       {/* Main */}
       <div className="flex-1 lg:h-screen overflow-y-auto px-6 py-10 lg:px-16">
-        <section className="max-w-3xl">
+        <section className="mx-auto max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
             AI-powered validation
@@ -321,7 +320,7 @@ export default function Home() {
           </p>
         </section>
 
-        <form onSubmit={handleSubmit} className="mt-10 max-w-3xl">
+        <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-3xl">
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition focus-within:border-amber-400 focus-within:ring-4 focus-within:ring-amber-100">
             <textarea
               value={idea}
@@ -332,9 +331,7 @@ export default function Home() {
               className="w-full resize-none bg-transparent text-base text-zinc-800 placeholder:text-zinc-400 outline-none"
             />
 
-            <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-             
-
+            <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-end">
               <button
                 type="submit"
                 disabled={loading || idea.trim().length < 10}
@@ -354,7 +351,7 @@ export default function Home() {
         </form>
 
         {!analysis && (
-          <div className="mt-8 max-w-3xl rounded-2xl border border-dashed border-zinc-300 bg-white/60 px-6 py-14 text-center sm:px-8">
+          <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-dashed border-zinc-300 bg-white/60 px-6 py-14 text-center sm:px-8">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50">
               <Lightbulb className="h-6 w-6 text-amber-500" />
             </div>
@@ -381,7 +378,7 @@ export default function Home() {
         )}
 
         {analysis && (
-          <div className="mt-14 max-w-6xl space-y-8">
+          <div className="mx-auto mt-14 max-w-6xl space-y-8">
             {/* SWOT */}
             {analysis.swot && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
