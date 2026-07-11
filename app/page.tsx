@@ -296,46 +296,48 @@ export default function Home() {
 
       {/* Sidebar: fixed slide-in drawer on mobile, static column on desktop */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 ease-in-out
-        lg:static lg:z-auto lg:h-screen lg:translate-x-0
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-zinc-200 bg-white transition-transform duration-300 ease-in-out
+        lg:static lg:z-auto lg:h-screen lg:w-72 lg:max-w-none lg:translate-x-0
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {sidebarContent}
       </aside>
 
       {/* Main */}
-      <div className="flex-1 lg:h-screen overflow-y-auto px-6 py-10 lg:px-16">
+      <div className="flex-1 lg:h-screen overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-16">
         <section className="mx-auto max-w-3xl">
-          <div className=" uppercase mx-auto flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold capitalize text-amber-700">
+          <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-700">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
             AI-powered validation
           </div>
 
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 md:text-6xl">
+          <h1 className="mt-5 text-3xl font-bold tracking-tight text-zinc-900 sm:mt-6 sm:text-4xl md:text-6xl">
             Validate your <span className="text-amber-500">startup idea</span>.
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-zinc-600">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-zinc-600 sm:mt-6 sm:text-lg sm:leading-8">
             Describe your startup idea and let AI analyze its strengths,
             weaknesses, competitors, risks, and market opportunity.
           </p>
         </section>
 
-        <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-3xl">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition focus-within:border-amber-400 focus-within:ring-4 focus-within:ring-amber-100">
+        <form onSubmit={handleSubmit} className="mx-auto mt-8 max-w-3xl sm:mt-10">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition focus-within:border-amber-400 focus-within:ring-4 focus-within:ring-amber-100 sm:p-6">
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder='Example: "An AI platform that matches students with internship opportunities."'
               rows={3}
-              className="w-full resize-none bg-transparent text-base text-zinc-800 placeholder:text-zinc-400 outline-none"
+              className="w-full resize-none bg-transparent text-sm text-zinc-800 placeholder:text-zinc-400 outline-none sm:text-base"
             />
 
             <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            
+
               <button
                 type="submit"
-                disabled={loading}
-                className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+                disabled={loading || idea.trim().length < 1}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98] sm:w-auto"
               >
                 {loading ? "Analyzing..." : "Run Analysis"}
                 <Send className="h-4 w-4" />
@@ -351,11 +353,11 @@ export default function Home() {
         </form>
 
         {!analysis && (
-          <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-dashed border-zinc-300 bg-white/60 px-6 py-14 text-center sm:px-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50">
-              <Lightbulb className="h-6 w-6 text-amber-500" />
+          <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-dashed border-zinc-300 bg-white/60 px-5 py-10 text-center sm:px-8 sm:py-14">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 sm:h-14 sm:w-14">
+              <Lightbulb className="h-5 w-5 text-amber-500 sm:h-6 sm:w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-bold text-zinc-900">
+            <h3 className="mt-4 text-lg font-bold text-zinc-900 sm:mt-5 sm:text-xl">
               Your startup journey starts here.
             </h3>
             <p className="mt-2 text-sm text-zinc-500">
@@ -368,7 +370,7 @@ export default function Home() {
                   key={prompt}
                   type="button"
                   onClick={() => setIdea(prompt)}
-                  className="w-full max-w-xl rounded-full border border-zinc-200 bg-white px-5 py-2.5 text-sm text-zinc-600 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+                  className="w-full max-w-xl rounded-full border border-zinc-200 bg-white px-4 py-2.5 text-left text-sm text-zinc-600 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 sm:px-5 sm:text-center"
                 >
                   {prompt}
                 </button>
@@ -378,11 +380,11 @@ export default function Home() {
         )}
 
         {analysis && (
-          <div className="mx-auto mt-14 max-w-6xl space-y-8">
+          <div className="mx-auto mt-10 max-w-6xl space-y-6 sm:mt-14 sm:space-y-8">
             {/* SWOT */}
             {analysis.swot && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+                <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
                   <h2 className="font-bold text-green-700 mb-3">Strengths</h2>
                   <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.strengths?.map((item, i) => (
@@ -391,7 +393,7 @@ export default function Home() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
                   <h2 className="font-bold text-red-700 mb-3">Weaknesses</h2>
                   <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.weaknesses?.map((item, i) => (
@@ -400,7 +402,7 @@ export default function Home() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
                   <h2 className="font-bold text-blue-700 mb-3">
                     Opportunities
                   </h2>
@@ -411,7 +413,7 @@ export default function Home() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
                   <h2 className="font-bold text-yellow-700 mb-3">Threats</h2>
                   <ul className="space-y-2 text-sm text-zinc-600">
                     {analysis.swot.threats?.map((item, i) => (
@@ -423,16 +425,16 @@ export default function Home() {
             )}
 
             {analysis?.swot && (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-                <h2 className="mb-6 text-xl font-semibold text-zinc-800">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+                <h2 className="mb-4 text-lg font-semibold text-zinc-800 sm:mb-6 sm:text-xl">
                   SWOT Overview Chart
                 </h2>
 
-                <div className="w-full h-72">
+                <div className="h-56 w-full sm:h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={swotData}>
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
                       <Tooltip />
                       <Bar dataKey="value" fill="#f59e0b" />
                     </BarChart>
@@ -443,15 +445,15 @@ export default function Home() {
 
             {/* Competitors */}
             {analysis.competitors?.length > 0 && (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-                <h2 className="mb-5 text-xl font-semibold text-zinc-800">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+                <h2 className="mb-4 text-lg font-semibold text-zinc-800 sm:mb-5 sm:text-xl">
                   Competitors
                 </h2>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {analysis.competitors.map((c, i) => (
                     <span
                       key={i}
-                      className="rounded-full bg-zinc-100 px-4 py-2 text-sm text-zinc-700"
+                      className="rounded-full bg-zinc-100 px-3 py-1.5 text-xs text-zinc-700 sm:px-4 sm:py-2 sm:text-sm"
                     >
                       {c}
                     </span>
@@ -462,26 +464,28 @@ export default function Home() {
 
             {/* Opportunity Score */}
             {analysis.opportunityScore !== undefined && (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-                <h2 className="text-sm uppercase tracking-widest text-zinc-500">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+                <h2 className="text-xs uppercase tracking-widest text-zinc-500 sm:text-sm">
                   Opportunity Score
                 </h2>
 
-                <p className="mt-3 text-6xl font-bold text-amber-500">
+                <p className="mt-3 text-5xl font-bold text-amber-500 sm:text-6xl">
                   {analysis.opportunityScore}
-                  <span className="text-2xl text-zinc-400">/100</span>
+                  <span className="text-xl text-zinc-400 sm:text-2xl">/100</span>
                 </p>
               </div>
             )}
 
             {/* Investor Pitch */}
             {analysis.pitch && (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-                <h2 className="mb-5 text-xl font-semibold text-zinc-800">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+                <h2 className="mb-4 text-lg font-semibold text-zinc-800 sm:mb-5 sm:text-xl">
                   Investor Pitch
                 </h2>
 
-                <p className="leading-8 text-zinc-600">{analysis.pitch}</p>
+                <p className="text-sm leading-7 text-zinc-600 sm:text-base sm:leading-8">
+                  {analysis.pitch}
+                </p>
               </div>
             )}
           </div>
