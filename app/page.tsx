@@ -98,6 +98,10 @@ export default function Home() {
   };
 
   const loadHistory = async () => {
+
+    const {
+      data: {user},
+    } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from("analyses")
       .select("*")
