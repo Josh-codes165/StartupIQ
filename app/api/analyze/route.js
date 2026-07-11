@@ -4,7 +4,8 @@ import { error } from "console";
 
 export async function POST(req) {
   try {
-    const { idea } = await req.json();
+    
+    const { idea, userId } = await req.json();
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -57,6 +58,7 @@ export async function POST(req) {
         {
           idea,
           analysis: data,
+          user_id: userId,
         },
       ])
       .select();

@@ -101,6 +101,7 @@ export default function Home() {
     const { data, error } = await supabase
       .from("analyses")
       .select("*")
+      .eq("user_id", user?.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -128,7 +129,7 @@ export default function Home() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idea }),
+        body: JSON.stringify({ idea , userId: user?.id}),
       });
 
       if (!res.ok) throw new Error("Failed to analyze idea");
