@@ -121,7 +121,6 @@ export default function Home() {
     : [];
 
   const runAnalysis = async () => {
-    if (idea.trim().length < 10) return;
     setLoading(true);
     setError(false);
 
@@ -330,9 +329,7 @@ export default function Home() {
             />
 
             <div className="mt-4 flex flex-col gap-3 border-t border-zinc-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-zinc-400">
-                ⌘/Ctrl + Enter to run · minimum 10 characters
-              </p>
+             
 
               <button
                 type="submit"
