@@ -4,8 +4,18 @@ import { error } from "console";
 
 export async function POST(req) {
   try {
-    
     const { idea, userId } = await req.json();
+
+    if (!userId) {
+      return Response.json(
+        {
+          error: "User is not authenticated.",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -65,9 +75,9 @@ export async function POST(req) {
 
     if (error) {
       console.log("supabase insert error", error);
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
-    console.log("saved to supabase", savedData)
+    console.log("saved to supabase", savedData);
 
     return Response.json(data);
   } catch (error) {
